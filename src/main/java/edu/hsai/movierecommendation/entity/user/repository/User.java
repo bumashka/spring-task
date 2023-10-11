@@ -1,11 +1,9 @@
 package edu.hsai.movierecommendation.entity.user.repository;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 @Entity
+@Table(name="User")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -25,6 +23,18 @@ public class User {
     }
 
     public void setNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
+    public User(){}
+
+    public User(Long id, String nickname) {
+        this.id = id;
+        this.nickname = nickname;
+    }
+
+    public User(String nickname) {
+        this.id = null;
         this.nickname = nickname;
     }
 }

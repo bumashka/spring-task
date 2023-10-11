@@ -20,7 +20,7 @@ public class GenreServiceImpl implements GenreService {
 
     @Override
     public GenreDto getByName(String name) {
-        return GenreDto.fromDbEntity(genreRepo.getByName(name));
+        return GenreDto.fromDbEntity(genreRepo.findByName(name).orElseThrow(EntityNotFoundException::new));
     }
 
     @Override
