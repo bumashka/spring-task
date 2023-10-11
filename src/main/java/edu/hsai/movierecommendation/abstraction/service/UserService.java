@@ -1,6 +1,6 @@
-package edu.hsai.movierecommendation.entity.user.abstraction.service;
+package edu.hsai.movierecommendation.abstraction.service;
 
-import edu.hsai.movierecommendation.entity.user.repository.User;
+import edu.hsai.movierecommendation.repository.User;
 
 public interface UserService {
     UserDto getById(Long id);

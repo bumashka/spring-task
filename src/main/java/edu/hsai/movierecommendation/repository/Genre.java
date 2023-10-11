@@ -1,24 +1,26 @@
-package edu.hsai.movierecommendation.entity.genre.repository;
+package edu.hsai.movierecommendation.repository;
 
-import edu.hsai.movierecommendation.entity.movie.repository.Movie;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name="genre")
+@Table(name = "genre")
 public class Genre {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Column(name="name")
+    @Column(name = "name")
     private String name;
 
-    @OneToMany
-    @JoinColumn(name = "id")
-    private List<Movie> movies = new ArrayList<>();
+//    @OneToMany
+//    @JoinColumn(name = "id")
+//    private List<Movie> movies = new ArrayList<>();
+//
+//    @ManyToMany(mappedBy = "preferredGenres")
+//    Set<User> usersWhoPrefer = new HashSet<>();
 
     public Long getId() {
         return id;

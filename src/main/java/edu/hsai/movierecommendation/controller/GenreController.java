@@ -1,6 +1,6 @@
-package edu.hsai.movierecommendation.entity.genre.controller;
+package edu.hsai.movierecommendation.controller;
 
-import edu.hsai.movierecommendation.entity.genre.abstraction.service.GenreService;
+import edu.hsai.movierecommendation.abstraction.service.GenreService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,4 +22,9 @@ public record GenreController(GenreService genreService) {
     public List<GenreService.GenreDto> findAll() {
         return genreService.getAll();
     }
+
+//    @GetMapping("/user/{nickname}")
+//    public List<GenreService.GenreDto> findByUser(@PathVariable String nickname) {
+//        return genreService.getByUser(nickname);
+//    }
 }

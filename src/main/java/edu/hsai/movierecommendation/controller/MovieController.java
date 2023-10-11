@@ -1,6 +1,6 @@
-package edu.hsai.movierecommendation.entity.movie.controller;
+package edu.hsai.movierecommendation.controller;
 
-import edu.hsai.movierecommendation.entity.movie.abstraction.service.MovieService;
+import edu.hsai.movierecommendation.abstraction.service.MovieService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

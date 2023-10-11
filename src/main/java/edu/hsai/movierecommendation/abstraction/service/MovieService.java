@@ -1,6 +1,6 @@
-package edu.hsai.movierecommendation.entity.movie.abstraction.service;
+package edu.hsai.movierecommendation.abstraction.service;
 
-import edu.hsai.movierecommendation.entity.movie.repository.Movie;
+import edu.hsai.movierecommendation.repository.Movie;
 
 import java.util.List;
 

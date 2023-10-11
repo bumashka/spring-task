@@ -1,5 +1,6 @@
-package edu.hsai.movierecommendation.entity.user.repository;
+package edu.hsai.movierecommendation.repository;
 
+import edu.hsai.movierecommendation.repository.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

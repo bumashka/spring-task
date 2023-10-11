@@ -1,7 +1,7 @@
-package edu.hsai.movierecommendation.entity.genre.abstraction.serviceImpl;
+package edu.hsai.movierecommendation.abstraction.serviceImpl;
 
-import edu.hsai.movierecommendation.entity.genre.abstraction.service.GenreService;
-import edu.hsai.movierecommendation.entity.genre.repository.GenreRepo;
+import edu.hsai.movierecommendation.abstraction.service.GenreService;
+import edu.hsai.movierecommendation.repository.GenreRepo;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,4 +27,9 @@ public class GenreServiceImpl implements GenreService {
     public List<GenreDto> getAll() {
         return genreRepo.findAll().stream().map(GenreDto::fromDbEntity).toList();
     }
+
+//    @Override
+//    public List<GenreDto> getByUser(String nickname) {
+//        return genreRepo.findPreferredGenres(nickname).stream().map(GenreDto::fromDbEntity).toList();
+//    }
 }

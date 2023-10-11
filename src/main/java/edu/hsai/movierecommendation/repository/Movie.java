@@ -1,6 +1,6 @@
-package edu.hsai.movierecommendation.entity.movie.repository;
+package edu.hsai.movierecommendation.repository;
 
-import edu.hsai.movierecommendation.entity.genre.repository.Genre;
+import edu.hsai.movierecommendation.repository.Genre;
 import jakarta.persistence.*;
 
 @Entity

@@ -1,4 +1,4 @@
-package edu.hsai.movierecommendation.entity.user.repository;
+package edu.hsai.movierecommendation.repository;
 
 import jakarta.persistence.*;
 
@@ -8,7 +8,16 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+
+    @Column(name = "nickname")
     private String nickname;
+
+//    @ManyToMany
+//    @JoinTable(
+//            name = "preference",
+//            joinColumns = @JoinColumn(name = "user_id"),
+//            inverseJoinColumns = @JoinColumn(name = "genre_id"))
+//    Set<Genre> preferredGenres = new HashSet<>();
 
     public Long getId() {
         return id;

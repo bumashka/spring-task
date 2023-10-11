@@ -1,8 +1,7 @@
-package edu.hsai.movierecommendation.entity.user.abstraction.serviceImpl;
+package edu.hsai.movierecommendation.abstraction.serviceImpl;
 
-import edu.hsai.movierecommendation.entity.user.abstraction.service.UserService;
-import edu.hsai.movierecommendation.entity.user.repository.User;
-import edu.hsai.movierecommendation.entity.user.repository.UserRepo;
+import edu.hsai.movierecommendation.abstraction.service.UserService;
+import edu.hsai.movierecommendation.repository.UserRepo;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

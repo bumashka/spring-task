@@ -1,6 +1,6 @@
-package edu.hsai.movierecommendation.entity.user.controller;
+package edu.hsai.movierecommendation.controller;
 
-import edu.hsai.movierecommendation.entity.user.abstraction.service.UserService;
+import edu.hsai.movierecommendation.abstraction.service.UserService;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
