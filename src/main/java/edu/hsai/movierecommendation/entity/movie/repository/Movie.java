@@ -1,5 +1,6 @@
 package edu.hsai.movierecommendation.entity.movie.repository;
 
+import edu.hsai.movierecommendation.entity.genre.repository.Genre;
 import jakarta.persistence.*;
 
 @Entity
@@ -9,7 +10,12 @@ public class Movie {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private String name;
-    private Long genreId;
+//    private Long genreId;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name="genre_id", nullable = false)
+//    @JsonIgnore
+    private Genre genre;
 
     public Long getId() {
         return id;
@@ -27,11 +33,20 @@ public class Movie {
         this.name = name;
     }
 
-    public Long getGenreId() {
-        return genreId;
+//    public Long getGenreId() {
+//        return genreId;
+//    }
+//
+//    public void setGenreId(Long genreId) {
+//        this.genreId = genreId;
+//    }
+
+
+    public Genre getGenre() {
+        return genre;
     }
 
-    public void setGenreId(Long genreId) {
-        this.genreId = genreId;
+    public void setGenre(Genre genre) {
+        this.genre = genre;
     }
 }

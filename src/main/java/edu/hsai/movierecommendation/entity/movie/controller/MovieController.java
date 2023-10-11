@@ -22,4 +22,9 @@ public record MovieController(MovieService movieService) {
     public List<MovieService.MovieDto> findAll() {
         return movieService.getAll();
     }
+
+    @GetMapping("/genre/{genreId}")
+    public List<MovieService.MovieDto> findByGenreId(@PathVariable Long genreId) {
+        return movieService.getByGenreId(genreId);
+    }
 }
