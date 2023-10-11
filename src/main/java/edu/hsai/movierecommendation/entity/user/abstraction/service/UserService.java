@@ -5,7 +5,7 @@ import edu.hsai.movierecommendation.entity.user.repository.User;
 public interface UserService {
     UserDto getById(Long id);
     Long addUser(AddUserDto addUserDto);
-
+    UserDto getByNickname(String nickname);
     record UserDto(Long id, String nickname) {
         public static UserDto fromDbEntity(User user) {
             return new UserDto(

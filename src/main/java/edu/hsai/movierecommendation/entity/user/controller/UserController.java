@@ -5,9 +5,14 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 public record UserController(UserService userService) {
-    @GetMapping("/getUser/{id}")
+    @GetMapping("/user/id/{id}")
     public UserService.UserDto findById(@PathVariable Long id) {
         return userService.getById(id);
+    }
+
+    @GetMapping("/user/nickname/{nickname}")
+    public UserService.UserDto findByNickname(@PathVariable String nickname) {
+        return userService.getByNickname(nickname);
     }
 
     @PostMapping("/signUp")

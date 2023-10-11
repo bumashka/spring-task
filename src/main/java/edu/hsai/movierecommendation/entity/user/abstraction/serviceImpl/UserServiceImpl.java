@@ -1,6 +1,7 @@
 package edu.hsai.movierecommendation.entity.user.abstraction.serviceImpl;
 
 import edu.hsai.movierecommendation.entity.user.abstraction.service.UserService;
+import edu.hsai.movierecommendation.entity.user.repository.User;
 import edu.hsai.movierecommendation.entity.user.repository.UserRepo;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,5 +21,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public Long addUser(AddUserDto addUserDto) {
         return userRepo.save(AddUserDto.toDbEntity(addUserDto)).getId();
+    }
+
+    @Override
+    public UserDto getByNickname(String nickname) {
+        return UserDto.fromDbEntity(userRepo.findByNickname(nickname).orElseThrow(EntityNotFoundException::new));
     }
 }
