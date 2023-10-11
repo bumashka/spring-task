@@ -8,12 +8,13 @@ public interface MovieService {
     MovieDto getById(Long id);
     MovieDto getByName(String name);
     List<MovieDto> getAll();
-    record MovieDto(Long id, String name, Long genreId) {
+    List<MovieDto> getByGenreId(Long genreId);
+    record MovieDto(Long id, String name, String genreName) {
         public static MovieDto fromDbEntity(Movie movie) {
             return new MovieDto(
                     movie.getId(),
                     movie.getName(),
-                    movie.getGenreId()
+                    movie.getGenre().getName()
             );
         }
     }

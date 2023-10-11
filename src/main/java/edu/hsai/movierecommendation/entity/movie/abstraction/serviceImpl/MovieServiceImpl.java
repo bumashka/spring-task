@@ -27,4 +27,9 @@ public class MovieServiceImpl implements MovieService {
     public List<MovieDto> getAll() {
         return movieRepo.findAll().stream().map(MovieService.MovieDto::fromDbEntity).toList();
     }
+
+    @Override
+    public List<MovieDto> getByGenreId(Long genreId) {
+        return movieRepo.findByGenreId(genreId).stream().map(MovieService.MovieDto::fromDbEntity).toList();
+    }
 }
