@@ -1,6 +1,5 @@
 package com.hsai.movie_bot.bot;
 
-import com.hsai.movie_bot.exception.ServiceException;
 import com.hsai.movie_bot.service.MovieService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,17 +11,20 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
-import java.time.LocalDate;
-
 @Component
 public class MovieBot extends TelegramLongPollingBot {
-    private String currentUser;
     private static final Logger LOG = LoggerFactory.getLogger(MovieBot.class);
     private static final String START = "/start";
-
-    private static final String SIGN_IN = "/sign_in";
-    private static final String SIGN_UP = "/sign_up";
+    private static final String RECOMMEND = "/recommend";
     private static final String HELP = "/help";
+
+    private static final String COMMANDS = """
+                You can use these commands:
+                /recommend <genre> - recommend film with certain genre or random if genre was not mentioned.\040\040\040\040\040\040\040\040\040\040\040\040
+                -----
+                /help - get help
+            """;
+    private static final String CONNECTION_ERROR = "Can't connect to the server!";
 
     @Autowired
     private MovieService movieService;
@@ -36,15 +38,15 @@ public class MovieBot extends TelegramLongPollingBot {
         if (!update.hasMessage() || !update.getMessage().hasText()) {
             return;
         }
-        var message = update.getMessage().getText();
+        var message = update.getMessage().getText().split(" ");
         var chatId = update.getMessage().getChatId();
-        switch (message) {
+        switch (message[0]) {
             case START -> {
                 String userName = update.getMessage().getChat().getUserName();
                 startCommand(chatId, userName);
             }
-            case SIGN_IN -> signInCommand(chatId);
-            case SIGN_UP -> signUpCommand(chatId);
+            case RECOMMEND -> recommendFilm(chatId, message);
+            // case SHOW_PREFERENCES -> showPreferences(chatId);
             case HELP -> helpCommand(chatId);
             default -> unknownCommand(chatId);
         }
@@ -56,82 +58,48 @@ public class MovieBot extends TelegramLongPollingBot {
     }
 
     private void startCommand(Long chatId, String userName) {
+        try {
+            movieService.getUserId(userName);
+        } catch (Exception e) {
+            LOG.error("Error of getting user name.", e);
+            sendMessage(chatId, CONNECTION_ERROR);
+        }
         var text = """
-                Добро пожаловать в бот, %s!
-                                
-                Здесь Вы сможете узнать как сильно я ненавижу этот универ.
-                                
-                Для этого вы можете воспользоваться командами:
-                /sign_up - зарегестрироваться
-                /sign_in - войти
-                /
-                                
-                Дополнительные команды:
-                /help - получение справки
+                Welcome to movie recommendation bot, %s!
+                %s
                 """;
-        var formattedText = String.format(text, userName);
+        var formattedText = String.format(text, userName, COMMANDS);
         sendMessage(chatId, formattedText);
     }
 
-    private void signUpCommand(Long chatId) {
-        var login = "";
-        String formattedText = "Введите логин: ";
-        sendMessage(chatId, formattedText);
-
-        login = movieService.addLogin();
-        if (login.equals("")) {
-            formattedText = "Данный логин ужэ существует или использует запрещённые символы. Попробуйте ещё раз.";
-            sendMessage(chatId, formattedText);
-            return;
+    private void recommendFilm(Long chatId, String[] message) {
+        String filmGenreName = null;
+        var genre = "";
+        try {
+            if (message.length > 1) {
+                genre = message[1];
+            }
+            filmGenreName = movieService.getRecommendedFilm(genre);
+        } catch (Exception e) {
+            LOG.error("Error of getting movie.", e);
+            sendMessage(chatId, CONNECTION_ERROR);
         }
-        formattedText = "Введите пароль: ";
-
-        sendMessage(chatId, formattedText);
-
-        boolean password = movieService.addPassword(login);
-        if(!password){
-            formattedText = "Пароль использует запрещённые символы. Попробуйте ещё раз.";
-            sendMessage(chatId, formattedText);
-            return;
-        }
-        formattedText = "Вы успешно зарегестрировались!\nПосле регистрации необходимо выполнить вход (\\sign_in).";
-        sendMessage(chatId, formattedText);
-    }
-
-    private void signInCommand(Long chatId) {
-        var login = "";
-        String formattedText = "Введите логин: ";
-        sendMessage(chatId, formattedText);
-        login = movieService.searchForLogin();
-        if(login.equals("")){
-            formattedText = "Пользователя с таким логином не существует.";
-            sendMessage(chatId, formattedText);
-            return;
-        }
-        formattedText = "Введите пароль: ";
-        sendMessage(chatId, formattedText);
-        boolean password = movieService.searchForPassword(login);
-        if(!password){
-            formattedText = "Неверный пароль. Попробуйте ещё раз.";
-            sendMessage(chatId, formattedText);
-            return;
-        }
-        currentUser = login;
-        formattedText = "Вход выполнен!";
-        sendMessage(chatId, formattedText);
+        assert filmGenreName != null;
+        sendMessage(chatId, "We recommend you to watch %s in genre %s.".formatted(
+                filmGenreName.split("~")[1], filmGenreName.split("~")[0]));
     }
 
     private void helpCommand(Long chatId) {
         var text = """
-                Справочная информация по боту
+                Bot background information
                                 
-                Можете воспользоваться следующими командами:
+                %s
                 """;
-        sendMessage(chatId, text);
+        sendMessage(chatId, text.formatted(COMMANDS));
     }
 
     private void unknownCommand(Long chatId) {
-        var text = "Не удалось распознать команду!";
+        var text = "Could not recognize the command!";
         sendMessage(chatId, text);
     }
 
@@ -141,7 +109,7 @@ public class MovieBot extends TelegramLongPollingBot {
         try {
             execute(sendMessage);
         } catch (TelegramApiException e) {
-            LOG.error("Ошибка отправки сообщения", e);
+            LOG.error("Sending message error", e);
         }
     }
 }

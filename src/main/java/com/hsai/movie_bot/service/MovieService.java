@@ -1,15 +1,9 @@
 package com.hsai.movie_bot.service;
 
-import com.hsai.movie_bot.exception.ServiceException;
-
 public interface MovieService {
 
-    String addLogin();
+    String getRecommendedFilm(String genre) throws Exception;
 
-    boolean addPassword(String login);
-
-    String searchForLogin();
-
-    boolean searchForPassword(String login);
+    void getUserId(String userName) throws Exception;
 
 }

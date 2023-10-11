@@ -1,60 +1,68 @@
 package com.hsai.movie_bot.service.impl;
 
-import com.hsai.movie_bot.client.CbrClient;
-import com.hsai.movie_bot.exception.ServiceException;
+import com.hsai.movie_bot.client.SQLClient;
 import com.hsai.movie_bot.service.MovieService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
-import org.w3c.dom.Document;
-import org.xml.sax.InputSource;
 
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
-import java.io.StringReader;
+import java.util.random.RandomGenerator;
 
 @Service
 public class MovieServiceImpl implements MovieService {
-
-    private static final Logger LOG = LoggerFactory.getLogger(MovieServiceImpl.class);
-    private static final String USD_XPATH = "/ValCurs//Valute[@ID='R01235']/Value";
-    private static final String EUR_XPATH = "/ValCurs//Valute[@ID='R01239']/Value";
-
     @Autowired
-    private CbrClient client;
+    private SQLClient client;
 
-    private static String extractCurrencyValueFromXML(String xml, String xpathExpression)
-            throws ServiceException {
-        var source = new InputSource(new StringReader(xml));
+    @Cacheable(value = "user", unless = "#result == null or #result.isEmpty()")
+    @Override
+    public void getUserId(String userName) throws Exception {
+        var userOptional = client.getUser(userName);
+
+        String field = userOptional.orElseThrow(
+                () -> new Exception("Couldn't get user name.")
+        );
+        JSONObject user = new JSONObject(field);
         try {
-            var xpath = XPathFactory.newInstance().newXPath();
-            var document = (Document) xpath.evaluate("/", source, XPathConstants.NODE);
-
-            return xpath.evaluate(xpathExpression, document);
-        } catch (XPathExpressionException e) {
-            throw new ServiceException("Не удалось распарсить XML", e);
+            user.get("nickname");
+        } catch (JSONException e) {
+            throw new Exception("No user in the database!");
         }
     }
 
-    public String addLogin(){
-        String login = "";
-        return login;
-    };
-
-    public boolean addPassword(String login)
-    {
-        return false;
-    };
-
-    public String searchForLogin(){
-        return "Hate this life!";
-    };
-
-    public boolean searchForPassword(String login){
-        return false;
-    };
+    @Override
+    public String getRecommendedFilm(String genre) throws Exception {
+        long genreId;
+        String genreName = genre;
+        if (!genre.isEmpty()) {
+            var genreOptional = client.findGenre(genre);
+            String field = genreOptional.orElseThrow(
+                    () -> new Exception("Client is not answering.")
+            );
+            JSONObject JSONgenre = new JSONObject(field);
+            try {
+                genreId = Long.parseLong(JSONgenre.get("id").toString());
+            } catch (JSONException e) {
+                throw new Exception("No such genre in the database!");
+            }
+        } else {
+            var genreOptional = client.findAllGenres();
+            String field = genreOptional.orElseThrow(
+                    () -> new Exception("Client is not answering.")
+            );
+            JSONArray JSONArrayGenre = new JSONArray(field);
+            JSONObject randomGenre = JSONArrayGenre.getJSONObject(
+                    RandomGenerator.getDefault().nextInt(JSONArrayGenre.length() - 1));
+            genreId = Long.parseLong(randomGenre.get("id").toString());
+            genreName = randomGenre.get("name").toString();
+        }
+        JSONArray JSONArrayMovie = new JSONArray(client.findMovieBasedOnGenre(String.valueOf(genreId)).orElseThrow(
+                () -> new Exception("Client is not answering.")
+        ));
+        JSONObject randomMovie = JSONArrayMovie.getJSONObject(
+                RandomGenerator.getDefault().nextInt(JSONArrayMovie.length() - 1));
+        return genreName.concat("~").concat(randomMovie.get("name").toString());
+    }
 }
