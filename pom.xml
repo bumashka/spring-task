@@ -69,8 +69,16 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<mainClass>
+						com.hsai.movie_bot.MovieBotApplication
+					</mainClass>
+				</configuration>
 			</plugin>
 		</plugins>
+			<finalName>
+				telegram
+			</finalName>
 	</build>
 
 </project>
