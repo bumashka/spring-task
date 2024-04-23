@@ -9,8 +9,9 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.hsai</groupId>
-	<artifactId>telegram</artifactId>
-	<name>telegram</name>
+	<artifactId>movie_bot</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>movie_bot</name>
 	<description>MovieBot with Spring Boot</description>
 	<properties>
 		<java.version>17</java.version>
@@ -75,6 +76,9 @@
 				</configuration>
 			</plugin>
 		</plugins>
+			<finalName>
+				telegram
+			</finalName>
 	</build>
 
 </project>
