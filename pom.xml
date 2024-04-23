@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.hsai</groupId>
 	<artifactId>movie_bot</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>telegram</version>
 	<name>movie_bot</name>
 	<description>MovieBot with Spring Boot</description>
 	<properties>
@@ -76,9 +76,6 @@
 				</configuration>
 			</plugin>
 		</plugins>
-			<finalName>
-				telegram
-			</finalName>
 	</build>
 
 </project>
