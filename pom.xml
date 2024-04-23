@@ -9,9 +9,8 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.hsai</groupId>
-	<artifactId>movie_bot</artifactId>
-	<version>telegram</version>
-	<name>movie_bot</name>
+	<artifactId>telegram</artifactId>
+	<name>telegram</name>
 	<description>MovieBot with Spring Boot</description>
 	<properties>
 		<java.version>17</java.version>
