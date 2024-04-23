@@ -11,6 +11,8 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+import java.util.Arrays;
+
 @Component
 public class MovieBot extends TelegramLongPollingBot {
     private static final Logger LOG = LoggerFactory.getLogger(MovieBot.class);
@@ -39,7 +41,7 @@ public class MovieBot extends TelegramLongPollingBot {
             return;
         }
         var message = update.getMessage().getText().split(" ");
-        LOG.info("Got message: ", message);
+        LOG.info("Got message: ".concat(Arrays.stream(message).spliterator().toString()));
         var chatId = update.getMessage().getChatId();
         switch (message[0]) {
             case START -> {
