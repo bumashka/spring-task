@@ -39,6 +39,7 @@ public class MovieBot extends TelegramLongPollingBot {
             return;
         }
         var message = update.getMessage().getText().split(" ");
+        LOG.info("Got message: ", message);
         var chatId = update.getMessage().getChatId();
         switch (message[0]) {
             case START -> {
