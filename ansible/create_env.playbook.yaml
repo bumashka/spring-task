@@ -4,7 +4,7 @@
   tasks:
     - name: Run terraform
       terraform:
-        project_path: "."
+        project_path: "../terraform"
         force_init: yes
         state: present
       register: trfrm
@@ -24,7 +24,16 @@
         ansible_host: "{{ trfrm.outputs.servers.value.movie_bot_client}}"
         ansible_ssh_private_key_file: ~/.ssh/id_rsa
         ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
-        
+
+- name: Get secrets from vault
+  hosts: localhost
+  tasks:
+    - name: Get bot secrets from vault
+      community.hashi_vault.vault_kv2_get:
+        url: "http://localhost:8200"
+        path: "secret/database"
+      register: database
+
 - name: Timeout for instance creating
   hosts: localhost
   connection: local     
@@ -33,86 +42,125 @@
       wait_for:
         host: "{{ trfrm.outputs.servers.value.movie_bot_server }}"
         port: 22
-        
+
     - name: Wait for client port 22
       wait_for:
         host: "{{ trfrm.outputs.servers.value.movie_bot_client }}"
         port: 22
 
-- hosts: movie_bot_server
-  name: Start mysql server
+- name: Configure database host
+  hosts: movie_bot_server
   become: yes
+
+  vars:
+    db_name: "{{ hostvars.localhost.secret.database.secret.db_name }}"
+    db_user: "{{ hostvars.localhost.secret.database.secret.db_user }}"
+    db_password: "{{ hostvars.localhost.secret.database.secret.db_password }}"
+
+  pre_tasks:
+    - name: "Install packages"
+      dnf: "name={{ item }} state=present"
+      with_items:
+        - postgresql
+        - postgresql-server
+
+    - name: "Install Python packages"
+      pip: "name={{ item }}  state=present"
+      with_items:
+        - psycopg2-binary
+
   tasks:
-    - name: Update apt package cache
-      apt:
-        update_cache: yes
+    - name: "Find out if PostgreSQL is initialized"
+      ansible.builtin.stat:
+        path: "/var/lib/pgsql/data/pg_hba.conf"
+      register: postgres_data
 
-    - name: Install MySQL server
-      apt:
-        name: mysql-server-8.0
+    - name: "Initialize PostgreSQL"
+      shell: "postgresql-setup initdb"
+      when: not postgres_data.stat.exists
+
+    - name: "Start and enable services"
+      service: "name={{ item }} state=started enabled=yes"
+      with_items:
+        - postgresql
+
+    - name: "Create app database"
+      postgresql_db:
         state: present
+        name: "{{ db_name }}"
+      become: yes
+      become_user: postgres
 
-    - name: Install python3-pip
-      apt:
-        name: python3-pip
+    - name: "Create db user"
+      postgresql_user:
         state: present
+        name: "{{ db_user }}"
+        password: "{{ db_password }}"
+      become: yes
+      become_user: postgres
 
-    - name: Install PyMySQL using pip
-      pip:
-        name: pymysql
-        state: present
-        executable: pip3
+    - name: "Grant db user access to app db"
+      postgresql_privs:
+        type: database
+        database: "{{ db_name }}"
+        roles: "{{ db_user }}"
+        grant_option: no
+        privs: all
+      become: yes
+      become_user: postgres
 
-    - name: Change server configuration
-      ansible.builtin.lineinfile:
-        path: /etc/mysql/mysql.conf.d/mysqld.cnf
-        regexp: "^bind-address"
-        line: "bind-address = 0.0.0.0"
+    - name: "Allow md5 connection for the db user"
+      postgresql_pg_hba:
+        dest: "~/data/pg_hba.conf"
+        contype: host
+        databases: all
+        method: md5
+        users: "{{ db_user }}"
+        create: true
+      become: yes
+      become_user: postgres
+      notify: restart postgres
 
-    - name: Start MySQL service
-      service:
-        name: mysql
-        state: restarted
-        enabled: yes
-
-    - name: Install net-tools
-      apt:
-        name: net-tools
-        state: present
-
-    - name: Add user
-      mysql_user:
-        name: "finley"
-        password: "password"
-        priv: "event_reminder.*:ALL"
-        host: "%"  # Разрешить подключение с любого хоста
-        state: present
-        login_unix_socket: /run/mysqld/mysqld.sock
-
-    - name: Copy sql import script
+    - name: "Copy sql import script"
       copy:
-        src: "{{ sql_path  }}"
-        dest: /home/ubuntu
+          src: "{{ sql_path }}"
+          dest: /home/ubuntu
 
-    - name: Import database dump
-      mysql_db:
-        name: event_reminder
-        state: import
-        login_unix_socket: /var/run/mysqld/mysqld.sock
-        target: /home/ubuntu/DB.sql
+    - name: "Execute script from variable"
+      command: "psql {{ db_name }} -c home/ubuntu/init.sql"
+      become_user: postgres
+      register: sql_response_variable
 
-- hosts: event_reminder_server
+  handlers:
+    - name: restart postgres
+      service: name=postgresql state=restarted
+
+- hosts: movie_bot_client
   name: Deploy application
   become: true
 
+  os_environment:
+    - key: MOVIE_BOT_SERVER
+      value: "{{ trfrm.outputs.servers.value.movie_bot_server }}"
+
   tasks:
+    - name: populate /etc/environment
+      lineinfile:
+        path: "/etc/environment"
+        state: present
+        regexp: "^{{ item.key }}="
+        line: "{{ item.key }}={{ item.value}}"
+
+      with_items: "{{ os_environment }}"
+      become: yes
+
     - name: Update apt package cache
       apt:
         update_cache: yes
 
-    - name: Install JDK 18
+    - name: Install JDK 17
       apt:
-        name: openjdk-18-jdk
+        name: openjdk-17-jdk
         state: present
 
     - name: Copy jar archive
@@ -122,23 +170,41 @@
 
     - name: Set application as service
       copy:
-        src: "{{ unit_path }}"
+        src: "{{ client_service }}"
         dest: /etc/systemd/system/
-    - hosts: dev
 
-    - name: populate /etc/environment
-      lineinfile:
-
-        path: "/etc/environment"
-        state: present
-        regexp: "^{{ item.key }}="
-        line: "{{ item.key }}={{ item.value}}"
-
-        with_items: "{{ os_environment }}"
-        become: yes
-        
     - name: Deploy Java application
       systemd:
         daemon_reload: true
         state: restarted
-        name: perekrestov_bot
+        name: my_java_client
+
+- hosts: movie_bot_server
+  name: Deploy application server
+  become: true
+
+  tasks:
+    - name: Update apt package cache
+      apt:
+        update_cache: yes
+
+    - name: Install JDK 17
+      apt:
+        name: openjdk-17-jdk
+        state: present
+
+    - name: Copy jar archive
+      copy:
+        src: "{{ jar_path }}"
+        dest: /home/ubuntu/
+
+    - name: Set application as service
+      copy:
+        src: "{{ server_service }}"
+        dest: /etc/systemd/system/
+
+    - name: Deploy Java application
+      systemd:
+        daemon_reload: true
+        state: restarted
+        name: my_java_app

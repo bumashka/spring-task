@@ -14,9 +14,8 @@ provider "vault" {
   address = "http://localhost:8200"
 }
 
-data "vault_kv_secret_v2" "auth_secret" {
-  mount = "kv"
-  name  = "openstack-auth"
+data "vault_generic_secret" "openstack" {
+  path = "secret/openstack"
 }
 
 # Configure the OpenStack Provider
