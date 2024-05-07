@@ -16,7 +16,7 @@
 	<name>movie-recommendation-bot</name>
 
 	<properties>
-		<java.version>21</java.version>
+		<java.version>17</java.version>
 		<main.class>com.example.movierecommendationbot.App</main.class>
 	</properties>
 
