@@ -126,24 +126,21 @@
     - name: restart postgres
       service: name=postgresql state=restarted
 
-- hosts: movie_bot_client
-  name: Deploy application
+- name: Deploy application
+  hosts: movie_bot_client
   become: true
 
-  os_environment:
-    - key: MOVIE_BOT_SERVER
-      value: "{{ trfrm.outputs.servers.value.movie_bot_server }}"
+  vars:
+    key: "MOVIE_BOT_SERVER"
+    value: "{{ trfrm.outputs.servers.value.movie_bot_server }}"
 
   tasks:
     - name: populate /etc/environment
       lineinfile:
         path: "/etc/environment"
         state: present
-        regexp: "^{{ item.key }}="
-        line: "{{ item.key }}={{ item.value}}"
-
-      with_items: "{{ os_environment }}"
-      become: yes
+        regexp: "^{{ key }}="
+        line: "{{ key }}={{ value}}"
 
     - name: Update apt package cache
       apt:
