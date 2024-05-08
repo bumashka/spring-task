@@ -116,6 +116,32 @@
         privs: all
       become: yes
 
+    - name: Update apt package cache
+      apt:
+        update_cache: yes
+
+    - name: Install JDK 17
+      apt:
+        update_cache: yes
+        name: openjdk-17-jdk-headless
+        state: present
+
+    - name: Copy jar archive
+      copy:
+        src: "{{ jar_path }}"
+        dest: /home/ubuntu/target
+
+    - name: Set application as service
+      copy:
+        src: "{{ server_service }}"
+        dest: /etc/systemd/system/
+
+    - name: Deploy Java application
+      systemd:
+        daemon_reload: true
+        state: restarted
+        name: my_java_app
+
 #    - name: "Copy sql import script"
 #      copy:
 #          src: "{{ sql_path }}"
@@ -180,33 +206,33 @@
         state: restarted
         name: my_java_client
 
-- hosts: movie_bot_server
-  name: Deploy application server
-  become: true
-
-  tasks:
-    - name: Update apt package cache
-      apt:
-        update_cache: yes
-
-    - name: Install JDK 17
-      apt:
-        update_cache: yes
-        name: openjdk-17-jdk-headless
-        state: present
-
-    - name: Copy jar archive
-      copy:
-        src: "{{ jar_path }}"
-        dest: /home/ubuntu/target
-
-    - name: Set application as service
-      copy:
-        src: "{{ server_service }}"
-        dest: /etc/systemd/system/
-
-    - name: Deploy Java application
-      systemd:
-        daemon_reload: true
-        state: restarted
-        name: my_java_app
+#- hosts: movie_bot_server
+#  name: Deploy application server
+#  become: true
+#
+#  tasks:
+#    - name: Update apt package cache
+#      apt:
+#        update_cache: yes
+#
+#    - name: Install JDK 17
+#      apt:
+#        update_cache: yes
+#        name: openjdk-17-jdk-headless
+#        state: present
+#
+#    - name: Copy jar archive
+#      copy:
+#        src: "{{ jar_path }}"
+#        dest: /home/ubuntu/target
+#
+#    - name: Set application as service
+#      copy:
+#        src: "{{ server_service }}"
+#        dest: /etc/systemd/system/
+#
+#    - name: Deploy Java application
+#      systemd:
+#        daemon_reload: true
+#        state: restarted
+#        name: my_java_app
