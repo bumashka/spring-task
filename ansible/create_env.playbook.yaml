@@ -198,12 +198,11 @@
         update_cache: yes
         name: openjdk-17-jdk-headless
         state: present
-      become: yes
 
     - name: Copy jar archive
       copy:
         src: "{{ jar_path }}"
-        dest: /home/ubuntu/
+        dest: /home/ubuntu/target
 
     - name: Set application as service
       copy:
