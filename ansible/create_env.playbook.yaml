@@ -171,7 +171,7 @@
     - name: Copy jar archive
       copy:
         src: "{{ jar_path }}"
-        dest: /home/ubuntu/
+        dest: /home/ubuntu/target
 
     - name: Set application as service
       copy:
