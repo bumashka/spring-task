@@ -164,8 +164,10 @@
 
     - name: Install JDK 17
       apt:
+        update_cache: yes
         name: openjdk-17-jdk-headless
         state: present
+      become: yes
 
     - name: Copy jar archive
       copy:
@@ -194,8 +196,10 @@
 
     - name: Install JDK 17
       apt:
+        update_cache: yes
         name: openjdk-17-jdk-headless
         state: present
+      become: yes
 
     - name: Copy jar archive
       copy:
