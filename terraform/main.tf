@@ -20,10 +20,10 @@ data "vault_generic_secret" "openstack" {
 
 # Configure the OpenStack Provider
 provider "openstack" {
-  user_name   = data.vault_kv_secret_v2.auth_secret.data["username"]
-  tenant_id   = data.vault_kv_secret_v2.auth_secret.data["project_id"]
-  password    = data.vault_kv_secret_v2.auth_secret.data["password"]
-  auth_url    = data.vault_kv_secret_v2.auth_secret.data["auth_url"]
+  user_name   = data.vault_generic_secret.openstack.data["username"]
+  tenant_id   = data.vault_generic_secret.openstack.data["project_id"]
+  password    = data.vault_generic_secret.openstack.data["password"]
+  auth_url    = data.vault_generic_secret.openstack.data["auth_url"]
 }
 
 # Define security group
