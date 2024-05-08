@@ -3,7 +3,7 @@ terraform {
   required_providers {
     openstack = {
       source  = "terraform-provider-openstack/openstack"
-      version = "~> 1.39.0"
+      version = "~> 1.43.0"
     }
   }
 }
@@ -46,10 +46,10 @@ resource "openstack_compute_instance_v2" "movie_bot_client" {
 }
 
 resource "openstack_compute_instance_v2" "movie_bot_server" {
-  name        = "movie_bot_server"
+  name = "movie_bot_server"
   image_name  = var.image_name
   flavor_name = var.flavor_name
-  key_pair    = var.key_pair
+  key_pair = var.key_pair
   security_groups = [openstack_networking_secgroup_v2.buldakova_secgroup.name]
 
   network {
