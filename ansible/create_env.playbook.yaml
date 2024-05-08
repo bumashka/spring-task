@@ -25,12 +25,6 @@
         ansible_ssh_private_key_file: ~/.ssh/id_rsa
         ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
 
-    - name: Get bot secrets from vault
-      community.hashi_vault.vault_kv2_get:
-        url: "http://localhost:8200"
-        path: "secret/database"
-      register: database
-
 - name: Timeout for instance creating
   hosts: localhost
   connection: local     
@@ -50,9 +44,9 @@
   become: yes
 
   vars:
-    db_name: "{{ hostvars.localhost.secret.database.secret.db_name }}"
-    db_user: "{{ hostvars.localhost.secret.database.secret.db_user }}"
-    db_password: "{{ hostvars.localhost.secret.database.secret.db_password }}"
+    db_name: "postgres"
+    db_user: "postgres"
+    db_password: "pass"
 
   pre_tasks:
     - name: "Install packages"
