@@ -101,27 +101,14 @@
         password: "{{ db_password }}"
       become: yes
 
-    - name: "Grant db user access to app db"
-      postgresql_privs:
+    - name: Grant user access to db
+      community.postgresql.postgresql_privs:
         type: database
         database: "{{ db_name }}"
         roles: "{{ db_user }}"
         grant_option: no
         privs: all
       become: yes
-      become_user: postgres
-
-    - name: "Allow md5 connection for the db user"
-      postgresql_pg_hba:
-        dest: "~/data/pg_hba.conf"
-        contype: host
-        databases: all
-        method: md5
-        users: "{{ db_user }}"
-        create: true
-      become: yes
-      become_user: postgres
-      notify: restart postgres
 
     - name: "Copy sql import script"
       copy:
