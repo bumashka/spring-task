@@ -146,21 +146,21 @@
   hosts: movie_bot_client
   become: true
 
-  vars:
-    key: "MOVIE_BOT_SERVER"
-    value: "{{ trfrm.outputs.servers.value.movie_bot_server }}"
-
+#  vars:
+#    key: "MOVIE_BOT_SERVER"
+#    value: "{{ trfrm.outputs.servers.value.movie_bot_server }}"
+#
   tasks:
-    - name: populate /etc/environment
-      lineinfile:
-        path: "/etc/environment"
-        state: present
-        regexp: "^{{ key }}="
-        line: "{{ key }}={{ value}}"
-
-    - name: Update apt package cache
-      apt:
-        update_cache: yes
+#    - name: populate /etc/environment
+#      lineinfile:
+#        path: "/etc/environment"
+#        state: present
+#        regexp: "^{{ key }}="
+#        line: "{{ key }}={{ value}}"
+#
+#    - name: Update apt package cache
+#      apt:
+#        update_cache: yes
 
     - name: Install JDK 17
       apt:
