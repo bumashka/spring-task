@@ -71,14 +71,12 @@
 						<addClasspath>true</addClasspath>
 						<classpathPrefix>lib/</classpathPrefix>
 						<mainClass>com.hsai.movie_bot.MovieBotApplication</mainClass>
+						<finalName>telegram</finalName>
 					</manifest>
 				</archive>
 			</configuration>
 		</plugin>
 		</plugins>
-			<finalName>
-				telegram
-			</finalName>
 	</build>
 
 </project>
