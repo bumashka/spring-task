@@ -9,23 +9,15 @@ required_version = ">= 0.14.0"
   }
 }
 
-# Configure the Vault Provider by $VAULT_ADDR and $VAULT_TOKEN
-provider "vault" {
-  address = "http://localhost:8200"
-}
-
-data "vault_generic_secret" "openstack" {
-  path = "secret/openstack"
-}
-
-# Configure the OpenStack Provider
 provider "openstack" {
-  user_name   = data.vault_generic_secret.openstack.data["username"]
-  tenant_id   = data.vault_generic_secret.openstack.data["project_id"]
-  password    = data.vault_generic_secret.openstack.data["password"]
-  auth_url    = data.vault_generic_secret.openstack.data["auth_url"]
+  auth_url = "https://cloud.crplab.ru:5000"
+  tenant_id = "a02aed7892fa45d0bc2bef3b8a08a6e9"
+  tenant_name = "students"
+  user_domain_name = "Default"
+  user_name = "master2022"
+  password = var.passwd
+  region = "RegionOne"
 }
-
 # Define security group
 resource "openstack_networking_secgroup_v2" "buldakova_secgroup" {
   name        = "buldakova_secgroup"
