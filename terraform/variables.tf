@@ -17,3 +17,5 @@ variable "security_group" {
 variable "network_name" {
   default = "sutdents-net"
 }
+
+
