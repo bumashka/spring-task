@@ -61,12 +61,12 @@ public class MovieBot extends TelegramLongPollingBot {
     }
 
     private void startCommand(Long chatId, String userName) {
-        try {
-            movieService.getUserId(userName);
-        } catch (Exception e) {
-            LOG.error("Error of getting user name.", e);
-            sendMessage(chatId, CONNECTION_ERROR);
-        }
+        //try {
+        //    movieService.getUserId(userName);
+        //} catch (Exception e) {
+        //    LOG.error("Error of getting user name.", e);
+        //    sendMessage(chatId, CONNECTION_ERROR);
+        //}
         var text = """
                 Welcome to movie recommendation bot, %s!
                 %s
