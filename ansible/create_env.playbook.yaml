@@ -71,20 +71,18 @@
       with_items:
         - postgresql
 
-    - name: "Create app database"
-      postgresql_db:
-        state: present
+    - name: Create the database
+      community.postgresql.postgresql_db:
         name: "{{ db_name }}"
-      become: yes
-      become_user: postgres
+        encoding: "UTF-8"
+      become: true
 
-    - name: "Create db user"
-      postgresql_user:
+    - name: Create database user
+      community.postgresql.postgresql_user:
         state: present
         name: "{{ db_user }}"
         password: "{{ db_password }}"
       become: yes
-      become_user: postgres
 
     - name: "Grant db user access to app db"
       postgresql_privs:
