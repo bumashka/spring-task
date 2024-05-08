@@ -110,15 +110,31 @@
         privs: all
       become: yes
 
-    - name: "Copy sql import script"
-      copy:
-          src: "{{ sql_path }}"
-          dest: /home/ubuntu
+#    - name: "Copy sql import script"
+#      copy:
+#          src: "{{ sql_path }}"
+#          dest: /home/ubuntu
+#
+#    - name: "Execute script from variable"
+#      command: "psql {{ db_name }} -c home/ubuntu/init.sql"
+#      become_user: postgres
+#      register: sql_response_variable
 
-    - name: "Execute script from variable"
-      command: "psql {{ db_name }} -c home/ubuntu/init.sql"
-      become_user: postgres
-      register: sql_response_variable
+- name: Fill db from backup
+  hosts: localhost
+  vars:
+    db_name: "postgres"
+    db_user: "postgres"
+    db_password: "pass"
+  tasks:
+    - name: Execute backup script
+      community.postgresql.postgresql_db:
+        login_host: "{{ trfrm.outputs.servers.value.movie_bot_server }}"
+        db: "{{ db_name }}"
+        login_user: "{{ db_user }}"
+        login_password: "{{ db_password }}"
+        target: "home/ubuntu/init.sql"
+        state: restore
 
 - name: Deploy application
   hosts: movie_bot_client
