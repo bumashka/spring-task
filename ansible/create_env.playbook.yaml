@@ -48,6 +48,12 @@
     db_user: "postgres"
     db_password: "pass"
 
+  handlers:
+    - name: Restart PostgreSQL
+      ansible.builtin.systemd:
+        name: postgresql
+        state: restarted
+
   tasks:
     - name: Update apt package cache
       apt:
@@ -126,10 +132,6 @@
       command: "psql {{ db_name }} -c home/ubuntu/init.sql"
       become_user: postgres
       register: sql_response_variable
-
-  handlers:
-    - name: restart postgres
-      service: name=postgresql state=restarted
 
 - name: Deploy application
   hosts: movie_bot_client
