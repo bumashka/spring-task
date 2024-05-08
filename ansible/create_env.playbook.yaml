@@ -49,34 +49,20 @@
     db_password: "pass"
 
   tasks:
-    - name: Install PostgreSQL
-      hosts: _HOST_2
-      gather_facts: true
-      become: true
-      tasks:
+    - name: Update apt package cache
+      apt:
+        update_cache: yes
 
-        - name: Add pgdg repo to sources.list.d
-          lineinfile:
-            path: /etc/apt/sources.list.d/pgdg.list
-            line: "deb http://apt.postgresql.org/pub/repos/apt {{ ansible_distribution_release }}-pgdg main"
-            create: true
+    - name: Install PSQL and Psycopg2
+      apt:
+        name:
+          - postgresql
+          - python3-psycopg2
+        state: present
 
-        - name: Download PostgreSQL key and add it to system keyring
-          apt_key:
-            url: https://www.postgresql.org/media/keys/ACCC4CF8.asc
-            state: present
-
-        - name: Update apt cache
-          apt:
-            update_cache: yes
-
-        - name: Install PostgreSQL
-          apt:
-            name: postgresql
-            state: present
     - name: "Find out if PostgreSQL is initialized"
       ansible.builtin.stat:
-        path: "/var/lib/pgsql/data/pg_hba.conf"
+      path: "/var/lib/pgsql/data/pg_hba.conf"
       register: postgres_data
 
     - name: "Initialize PostgreSQL"
