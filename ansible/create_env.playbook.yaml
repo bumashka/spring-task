@@ -53,13 +53,16 @@
       ansible.builtin.dnf:
         name: '@postgresql'
         state: present
+
     - name: Install a modularity appstream with defined stream and profile
       ansible.builtin.dnf:
         name: '@postgresql-server'
         state: present
 
-    - name: "Install Python packages"
-      pip: "name=['psycopg2-binary']  state=present"
+    - name: Install a modularity appstream with defined stream and profile
+      ansible.builtin.dnf:
+        name: '@psycopg2-binary'
+        state: present
 
   tasks:
     - name: "Find out if PostgreSQL is initialized"
