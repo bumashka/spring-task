@@ -147,7 +147,7 @@
   become: true
 
   vars:
-  key: "MOVIE_BOT_SERVER"
+   key: "MOVIE_BOT_SERVER"
 
   tasks:
     - name: populate /etc/environment
@@ -156,7 +156,6 @@
         state: present
         regexp: "^{{ key }}="
         line: "{{ key }}={{ movie_bot_server}}"
-
 
     - name: Install JDK 17
       apt:
