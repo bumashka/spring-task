@@ -3,6 +3,7 @@ terraform {
   required_providers {
     openstack = {
       source  = "terraform-provider-openstack/openstack"
+      version = "~> 1.39.0"
     }
   }
 }
@@ -16,7 +17,7 @@ provider "openstack" {
   password = var.passwd
   region = "RegionOne"
 }
-# Define security group
+
 resource "openstack_networking_secgroup_v2" "buldakova_secgroup" {
   name        = "buldakova_secgroup"
   description = "Security group for ssh and http/https"
