@@ -66,6 +66,12 @@
           - python3-psycopg2
         state: present
 
+    - name: Install PSQL-client
+      apt:
+        name:
+          - postgresql-client-common
+        state: present
+
     - name: Configure PostgreSQL
       ansible.builtin.template:
         src: ./pg_hba.conf
@@ -133,7 +139,7 @@
         db: "{{ db_name }}"
         login_user: "{{ db_user }}"
         login_password: "{{ db_password }}"
-        target: "home/ubuntu/init.sql"
+        target: "../init.sql"
         state: restore
 
 - name: Deploy application
