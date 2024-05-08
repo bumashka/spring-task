@@ -64,12 +64,23 @@
       ansible.builtin.template:
         src: ./pg_hba.conf
         dest: /etc/postgresql/14/main/pg_hba.conf
+        owner: postgres
+        group: postgres
         mode: 0640
 
-    - name: "Start and enable services"
-      service: "name={{ item }} state=started enabled=yes"
-      with_items:
-        - postgresql
+    - name: Start and enable the service
+      ansible.builtin.systemd:
+        name: postgresql
+        state: restarted
+        enabled: true
+
+    - name: Set options
+      community.postgresql.postgresql_set:
+        name: "listen_addresses"
+        value: "*"
+      become: yes
+      notify:
+        - Restart PostgreSQL
 
     - name: Create the database
       community.postgresql.postgresql_db:
