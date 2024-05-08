@@ -162,9 +162,9 @@
 #      apt:
 #        update_cache: yes
 
-    - name: Install JDK 18
+    - name: Install JDK 17
       apt:
-        name: openjdk-18-jdk
+        name: openjdk-17-jdk-headless
         state: present
 
     - name: Copy jar archive
@@ -192,9 +192,9 @@
       apt:
         update_cache: yes
 
-    - name: Install JDK 18
+    - name: Install JDK 17
       apt:
-        name: openjdk-18-jdk
+        name: openjdk-17-jdk-headless
         state: present
 
     - name: Copy jar archive
